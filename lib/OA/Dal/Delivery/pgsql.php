@@ -144,7 +144,13 @@ function OA_Dal_Delivery_result($result, $row_number, $field_name)
 
 function OX_escapeString($string)
 {
-    return pg_escape_string($string);
+    if (defined('HHVM_VERSION')) {
+        // HipHop plugin for pgsql' needs the connection object on calls for now
+        // See: https://github.com/PocketRent/hhvm-pgsql/
+        return pg_escape_string(OA_Dal_Delivery_connect('rawDatabase'), $string);
+    } else {
+        return pg_escape_string($string);
+    }
 }
 
 function OX_escapeIdentifier($string)
